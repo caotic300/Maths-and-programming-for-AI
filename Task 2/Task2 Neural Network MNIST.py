@@ -6,6 +6,7 @@ Created on Sat Dec 12 13:57:10 2020
 """
 import numpy as np
 from sklearn.datasets import fetch_openml
+import abc as ABC
 mnist = fetch_openml('mnist_784')
 X, y = mnist["data"], mnist["target"]
 
@@ -30,12 +31,32 @@ y_test = y_new[split:]
 print(X_train.shape)
 print(y_train.shape)
 
+class SGD:
+    def __init__(self, learning_rate =1.e-2, momentum = 0.0):
+        self.learning_rate = learning_rate
+        self.momentum = momentum
+    
+    def update(self, params, gradient):
+        if not hasattr(self, 'delta_params'):
+            
 
+class Layer(object):
+    def crate_layer(self, input_shape, rng):
+        """ Creates layer with parameter at __init__()"""
+        pass
+    
+    def forward(self, input):
+        """ Calculate layer output for given input (forward propagation). """
+        pass
 
-class Task2():
+    def backpropagation(self, input):
+        pass
+    
+class NeuralNetwork():
     
     def __init__(self, sizes, epochs, learn_rate):
         self.sizes = sizes
+
         self.epochs = epochs
         self.learn_r = learn_rate
 
@@ -48,13 +69,22 @@ class Task2():
         
         # Forward feed
         return 1 / (1 + np.exp(-z))
-    
+  
+   def sigmoid_d(self, z):
+       s = self.sigmoid(z, isDeriv=False)
+       return s*(1-s)
+   
 # Relu function can also be applied to input/hidden layers
     def relu(self, z):
         
         r = np.maximum(0, z)
         return r
-    
+    # Gradient of the Relu function 
+    def relu_d(self, z):
+      
+        dz = np.zeros(z.shape)
+        dz[z >= 0] = 1
+    return dz
 # Softmax function to be applied to the output layer 
     def softmax(self, z, isDeriv):
         expo = np.exp(z - z.max())
@@ -64,6 +94,17 @@ class Task2():
         
         # Forward feed
         return expo / np.sum(expo, axis = 0)    
+    
+  #Tanh function to be applied to the input/output layer  
+    def tanh(self, z):
+        """Returns the tanh of x """
+    return np.tanh(z)
+    
+  #Gradient of tanh function 
+    def tanh_d(self, z):
+        """Returns the gradiend of tanh(x) function """
+        e = np.exp(2*z)
+        return (e - 1)/(e + 1)
     
     def instantiate(self):
         
@@ -79,7 +120,7 @@ class Task2():
                     #,'b2' : np.zeros(y_train.shape[1], 1) * np.sqrt(1.0/ hiddenLayer)
                  }
         
-
+        
         return network
 
 
@@ -115,9 +156,6 @@ class Task2():
         changes['W1'] = np.outer(error. network['A0'])
         
         return changes
-
-
-    
 
 
 
